@@ -1,0 +1,15 @@
+{
+  "name": "isna-ramdaniah",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Landing page Isna Ramdaniah",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/liquid.js --bundle --minify --format=esm --target=es2020 --legal-comments=none --outfile=assets/js/liquid.js",
+    "serve": "npx --yes serve -l 5173 ."
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "three": "0.170.0"
+  }
+}
