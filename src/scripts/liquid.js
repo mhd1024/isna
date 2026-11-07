@@ -130,10 +130,13 @@ export function mountLiquid(el, name) {
   const img = el.querySelector('img');
   if (!img) return;
   const ready = img.complete && img.naturalWidth ? Promise.resolve() : img.decode().catch(() => new Promise(r => img.addEventListener('load', r, { once: true })));
-  ready.then(() => create(el, img, preset)).catch(err => console.warn('[liquid]', err));
+  ready
+    // ImageBitmap: ukuran tetap & terdekode di luar main thread (aman untuk <img> ber-srcset)
+    .then(() => createImageBitmap(img, { imageOrientation: 'flipY', premultiplyAlpha: 'none' }).catch(() => img))
+    .then(bmp => create(el, img, bmp, preset)).catch(err => console.warn('[liquid]', err));
 }
 
-function create(el, img, preset) {
+function create(el, img, bmp, preset) {
   const renderer = new WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'low-power', premultipliedAlpha: true });
   renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
@@ -165,14 +168,15 @@ function create(el, img, preset) {
   });
   const simScene = new Scene(); simScene.add(new Mesh(quad, simMat));
 
-  const tex = new Texture(img);
+  const tex = new Texture(bmp);
+  tex.flipY = bmp === img; // <img> perlu dibalik, ImageBitmap sudah dibalik
   tex.minFilter = LinearFilter; tex.generateMipmaps = false; tex.needsUpdate = true;
 
   const viewMat = new ShaderMaterial({
     vertexShader: VERT, fragmentShader: VIEW_FRAG, transparent: true, depthTest: false, depthWrite: false,
     uniforms: {
       uTex: { value: tex }, uSim: { value: null },
-      uRes: { value: new Vector2(1, 1) }, uImg: { value: new Vector2(img.naturalWidth, img.naturalHeight) },
+      uRes: { value: new Vector2(1, 1) }, uImg: { value: new Vector2(bmp.naturalWidth || bmp.width, bmp.naturalHeight || bmp.height) },
       uFocus: { value: new Vector2(...preset.focus) },
       uTime: { value: 0 }, uMask: { value: preset.mask }, uBreeze: { value: preset.breeze },
       uSway: { value: preset.sway }, uWarp: { value: preset.warp }, uIntro: { value: 0 },

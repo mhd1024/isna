@@ -1,0 +1,40 @@
+---
+import { Image, getImage } from 'astro:assets';
+import about from '../assets/about.webp';
+const full = await getImage({ src: about, format: 'webp' });
+---
+<section id="about" class="relative bg-bg-2">
+  <div class="mx-auto grid max-w-wrap items-center gap-[clamp(28px,4vw,52px)] px-[clamp(16px,4vw,40px)] pt-[clamp(48px,5vw,72px)] pb-[clamp(56px,6vw,80px)] sm:grid-cols-[240px_1fr] lg:grid-cols-[minmax(220px,290px)_1fr_minmax(200px,236px)]">
+    <figure data-reveal class="arch-frame relative z-0 mt-2.5 w-[min(280px,82%)] justify-self-center sm:mt-0 sm:w-auto sm:justify-self-stretch">
+      <svg data-sway class="absolute -top-4 -left-[22px] z-10 w-[54px]" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-flower" /></svg>
+      <a href={full.src} data-pswp data-pswp-width={about.width} data-pswp-height={about.height}
+         class="group block aspect-[272/286] overflow-hidden rounded-t-full rounded-b-[10px] shadow-soft" aria-label="Perbesar foto meja belajar">
+        <Image src={about} widths={[300, 544]} sizes="(min-width: 1024px) 290px, 280px" loading="lazy"
+          alt="Meja belajar dengan tumpukan buku, gelas kopi berpita, dan kertas bertuliskan Dream, Plan, Study, Grow"
+          class="size-full object-cover transition-transform duration-[1.4s] ease-out-soft group-hover:scale-105" />
+      </a>
+    </figure>
+
+    <div data-reveal>
+      <h2 class="script-title">About Me <svg class="brush" data-draw viewBox="0 0 160 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9c40-6 90-7 154-4" /></svg></h2>
+      <div class="max-w-[54ch] space-y-3.5 text-[15.5px] text-ink-2">
+        <p>Aku Isna Ramdaniah, mahasiswa Pendidikan Guru Sekolah Dasar di Universitas Terbuka. Saat ini, aku menempuh semester 5 dengan semangat terus belajar, berkembang, dan memberikan kontribusi positif bagi dunia pendidikan.</p>
+        <p>Di luar kelas, aku adalah seorang pendamping belajar di RA Anak Kreatif, yang percaya bahwa setiap anak berhak tumbuh dengan cinta, ilmu, dan nilai-nilai mulia.</p>
+        <div id="about-more" data-collapse class="h-0 overflow-hidden opacity-0">
+          <p>Aku senang menyiapkan kegiatan belajar yang sederhana tapi bermakna: bercerita, bermain angka, mengaji bersama, lalu menuliskan catatan kecil tentang perkembangan setiap anak. Dari situ aku belajar bahwa mengajar bukan soal cepat, tapi soal sabar dan hadir.</p>
+        </div>
+      </div>
+      <button type="button" class="btn btn-line mt-6.5" data-toggle="#about-more" aria-controls="about-more" aria-expanded="false">
+        <span data-closed="More About Me" data-open="Show Less">More About Me</span><svg><use href="#i-arrow" /></svg>
+      </button>
+    </div>
+
+    <blockquote data-reveal data-tilt
+      class="relative self-stretch rounded-[26px_26px_26px_34px] bg-butter-soft px-6.5 pt-8.5 pb-[74px] font-script text-[26px] leading-[1.32] font-medium italic sm:col-span-2 sm:max-w-[520px] sm:justify-self-center lg:col-span-1 lg:max-w-none">
+      <svg class="mb-3.5 block w-[30px] fill-ink" viewBox="0 0 40 30" aria-hidden="true"><path d="M2 28V17C2 8 7 3 15 2v5c-4 1-6 4-6 8h6v13Zm21 0V17c0-9 5-14 13-15v5c-4 1-6 4-6 8h6v13Z" /></svg>
+      <p>“Karena pendidikan adalah kunci untuk membuka masa depan yang lebih baik.”</p>
+      <svg data-draw class="doodle absolute bottom-8.5 left-5.5 w-[92px] !stroke-ink-2 !stroke-[1.5]" viewBox="0 0 120 40" aria-hidden="true"><path d="M2 32c20-6 40-6 60-4M72 30c-12-8-16-18-10-23 4-3 9-1 10 4 2-5 7-7 11-3 5 6-1 14-11 22" /></svg>
+      <svg data-breeze class="absolute -right-[18px] -bottom-[26px] w-[104px] origin-[55%_100%]" viewBox="0 0 110 120" aria-hidden="true"><use href="#i-daisies" /></svg>
+    </blockquote>
+  </div>
+</section>

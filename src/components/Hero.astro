@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import hero from '../assets/hero.webp';
+---
+<section id="home" class="relative flex flex-col overflow-hidden bg-bg-hero min-[900px]:min-h-[clamp(560px,47vw,760px)] min-[900px]:flex-row min-[900px]:items-center">
+  <div data-blob class="blob absolute top-[60px] -left-[90px] h-[300px] w-[170px] bg-butter-soft opacity-90 min-[900px]:top-[22%]" aria-hidden="true"></div>
+
+  <div data-liquid="hero" data-hero-media
+       class="liquid relative order-2 -mt-10 h-[64vw] min-h-[300px] min-[900px]:absolute min-[900px]:inset-y-0 min-[900px]:right-0 min-[900px]:left-[39%] min-[900px]:mt-0 min-[900px]:h-auto dark:brightness-[.86]">
+    <Image src={hero} width={1088} format="webp" loading="eager" fetchpriority="high"
+      alt="Isna berdiri membelakangi kamera memegang buket bunga liar di depan gedung Universitas Terbuka"
+      class="hero-fade absolute inset-0 size-full object-cover object-[60%_40%]" />
+    <svg data-draw class="doodle pointer-events-none absolute top-[18%] left-[32%] z-10 w-[52px] !stroke-[3.2] min-[900px]:top-[21%] min-[900px]:left-[25.5%]" viewBox="0 0 60 60" aria-hidden="true"><path d="M10 34 25 30M16 17l14 10M34 6l1 18" /></svg>
+  </div>
+
+  <div class="pointer-events-none relative z-10 mx-auto w-full max-w-wrap px-[var(--g)] pt-[110px] pb-2.5 [--g:clamp(16px,4vw,40px)] min-[900px]:pt-20 min-[900px]:pb-[70px] min-[900px]:pl-[clamp(24px,8.6vw,128px)] *:pointer-events-auto">
+    <h1 data-hero-title data-intro class="relative inline-block font-script text-[clamp(50px,5.5vw,84px)] leading-[1.02] font-medium">
+      <span class="block">Hello,</span>
+      <span class="block">I’m Isna Ramdaniah</span>
+      <svg data-draw class="doodle absolute -top-[.42em] left-[1.75em] w-[1.6em]" viewBox="0 0 120 70" aria-hidden="true">
+        <path d="M4 52c22 8 52 6 70-2 10-4 40-2 44 0M58 50C42 40 30 22 40 12c8-7 16 0 18 8 3-9 12-14 18-8 9 9-4 28-18 38" />
+      </svg>
+    </h1>
+    <p data-intro class="mt-5.5 mb-8 max-w-[30ch] text-[clamp(16px,1.45vw,19px)] leading-[1.45] text-ink-2">
+      A future educator, lifelong learner,<br /> and a girl who keeps dreaming. <svg class="icon"><use href="#i-heart" /></svg>
+    </p>
+    <a data-intro href="#about" class="btn btn-fill"><span>Let’s Get to Know Me</span><svg><use href="#i-arrow" /></svg></a>
+  </div>
+
+  <svg data-draw class="doodle pointer-events-none absolute bottom-[2.5%] left-0 z-10 hidden h-[14%] w-[52%] min-[900px]:block" viewBox="0 0 520 90" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 4c40 6 64 30 86 52 26 26 58 30 96 18 60-20 120-44 190-40 54 3 104 22 148 48" />
+  </svg>
+  <svg class="absolute inset-x-0 -bottom-px z-20 h-10 w-full fill-bg-2" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 60V34c160 22 330 26 520 10S900-4 1100 10s260 26 340 18v32Z" />
+  </svg>
+</section>

@@ -1,0 +1,40 @@
+---
+import { Image, getImage } from 'astro:assets';
+import polaroid from '../assets/polaroid.webp';
+import { skills } from '../data/site';
+const full = await getImage({ src: polaroid, format: 'webp' });
+---
+<section id="skills" class="relative bg-bg-2">
+  <div class="mx-auto grid max-w-wrap items-center gap-[clamp(24px,3vw,40px)] px-[clamp(16px,4vw,40px)] pt-[clamp(44px,4.5vw,64px)] pb-[clamp(28px,3vw,40px)] min-[900px]:grid-cols-[minmax(180px,220px)_1px_1fr] lg:grid-cols-[minmax(200px,230px)_1px_1fr_auto]">
+    <div data-reveal>
+      <h2 class="script-title">My Skills <svg class="brush" data-draw viewBox="0 0 160 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9c40-6 90-7 154-4" /></svg></h2>
+      <p class="max-w-[24ch] text-[15px] leading-[1.55] text-ink-2">Beberapa keterampilan yang terus aku asah untuk mendukung perjalananku.</p>
+      <button type="button" class="btn btn-line mt-5.5" data-skills-toggle aria-controls="skill-list" aria-expanded="false">
+        <span data-closed="See All Skills" data-open="Show Less">See All Skills</span><svg><use href="#i-arrow" /></svg>
+      </button>
+    </div>
+
+    <span class="hidden h-[76%] w-px bg-line-2/60 min-[900px]:block" aria-hidden="true"></span>
+
+    <ul id="skill-list" data-chips class="grid content-center gap-x-6.5 gap-y-2.5 sm:grid-cols-[repeat(2,minmax(0,max-content))]">
+      {skills.map((s) => (
+        <li data-chip data-tip={s.note} tabindex="0" hidden={s.extra}
+          class="group flex min-h-[42px] cursor-default items-center gap-3 rounded-full border border-line-2 bg-card/70 py-1.5 pr-5 pl-2 text-[12.5px] leading-tight transition-[background-color,border-color,translate] duration-500 ease-spring hover:translate-x-[3px] hover:border-gold hover:bg-butter-soft focus-visible:border-gold">
+          <svg class="size-[30px] rounded-full bg-bg-3 p-1.5 text-ink-2 transition duration-500 ease-spring group-hover:-rotate-10 group-hover:scale-110 group-hover:bg-butter" aria-hidden="true"><use href={`#s-${s.icon}`} /></svg>
+          {s.label}
+        </li>
+      ))}
+    </ul>
+
+    <figure data-reveal data-tilt class="relative mt-4.5 w-[clamp(220px,23vw,278px)] rotate-4 justify-self-center bg-[#fffdf9] p-[9px] pb-3 shadow-[0_2px_4px_rgb(80_60_40/.1),0_18px_34px_-16px_rgb(80_60_40/.4)] min-[900px]:col-span-3 lg:col-span-1 lg:mt-0 lg:mr-1.5">
+      <span class="absolute -top-3.5 left-1/2 h-7 w-[98px] -translate-x-[10%] -rotate-3 bg-[rgb(236_218_186/.85)] [clip-path:polygon(2%_8%,98%_0,100%_92%,0_100%)]" aria-hidden="true"></span>
+      <a href={full.src} data-pswp data-pswp-width={polaroid.width} data-pswp-height={polaroid.height} aria-label="Perbesar foto buku dan bunga" class="block">
+        <Image src={polaroid} widths={[280, 452]} sizes="280px" loading="lazy" alt="Vas bunga daisy di samping buku yang terbuka dan sebuah pena" class="aspect-[452/332] w-full object-cover" />
+      </a>
+      <figcaption class="pointer-events-none absolute top-[15%] right-[9%] text-center font-script text-[clamp(20px,2vw,25px)] leading-[1.12] font-medium text-[#fffaf2] [text-shadow:0_1px_8px_rgb(80_60_40/.35)]">
+        Keep<br />Learning<br />Keep Growing <svg class="icon"><use href="#i-heart" /></svg>
+      </figcaption>
+      <svg class="doodle absolute right-[3%] bottom-[14%] w-[30px] !stroke-[2.6]" viewBox="0 0 40 40" aria-hidden="true"><path d="M6 30l10-4M14 16l8 7M27 8l-1 12" /></svg>
+    </figure>
+  </div>
+</section>

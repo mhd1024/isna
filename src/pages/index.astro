@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import Icons from '../components/Icons.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Journey from '../components/Journey.astro';
+import Skills from '../components/Skills.astro';
+import Thoughts from '../components/Thoughts.astro';
+import Footer from '../components/Footer.astro';
+---
+<Base title="Isna Ramdaniah — Calon Pendidik"
+  description="Isna Ramdaniah, mahasiswa PGSD Universitas Terbuka dan pendamping belajar di RA Anak Kreatif. A future educator, lifelong learner, and a girl who keeps dreaming.">
+  <a href="#about" class="fixed -top-16 left-3 z-[100] rounded-full bg-butter px-4 py-2.5 text-espresso transition-[top] focus:top-3">Lewati ke konten</a>
+  <Nav />
+  <main class="overflow-x-clip">
+    <Hero />
+    <About />
+    <Journey />
+    <Skills />
+    <Thoughts />
+  </main>
+  <Footer />
+  <Icons />
+</Base>
+
+<script>
+  import '../scripts/app';
+</script>

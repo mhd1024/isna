@@ -1,7 +1,32 @@
 # Isna Ramdaniah — Landing Page
 
-Situs statis (HTML + CSS + JS). Buka `index.html` lewat server lokal apa saja, misalnya `npm run serve` atau `python3 -m http.server`.
+Dibangun dengan **Astro** (output statis) + **Tailwind CSS v4**.
 
-- `assets/js/main.js`: navigasi, scroll-spy, tema gelap/terang, reveal, expand.
-- `src/liquid.js`: efek foto cair (Three.js). Dibundel ke `assets/js/liquid.js` dengan `npm install && npm run build`, lalu dimuat lazy setelah halaman selesai dimuat. Efek ini dilewati kalau pengguna memilih reduced-motion, mengaktifkan Data Saver, atau browsernya tidak mendukung WebGL. Dalam kondisi itu foto biasa tetap tampil.
-- Ganti alamat email dan tautan Instagram/YouTube di `index.html` (cari `example.com`, `instagram.com`, `youtube.com`).
+| Kebutuhan | Library |
+|---|---|
+| Framework / build | Astro, Vite, optimasi gambar `astro:assets` (sharp) |
+| Styling | Tailwind CSS v4 (token warna di `src/styles/global.css`) |
+| Animasi | GSAP: ScrollTrigger, SplitText, DrawSVG, Flip |
+| Smooth scroll | Lenis |
+| 3D / efek cair | Three.js (`src/scripts/liquid.js`, dimuat lazy) |
+| Carousel journey (HP) | Embla Carousel |
+| Tooltip skill | Floating UI |
+| Lihat foto | PhotoSwipe |
+| Kartu miring | Vanilla Tilt |
+
+## Menjalankan
+
+```bash
+npm install
+npm run dev       # http://localhost:4321
+npm run build     # hasil di dist/, siap di-upload ke hosting statis mana pun
+npm run preview
+```
+
+## Mengubah konten
+
+- Teks journey, daftar skill + tooltip, email, dan link sosial ada di `src/data/site.ts`.
+- Foto ada di `src/assets/` (ganti file dengan nama yang sama).
+- Domain untuk og:image ada di `astro.config.mjs` (`site`).
+
+Animasi otomatis mati kalau pengguna memilih *reduced motion*. Efek Three.js dilewati juga untuk mode hemat data (Save-Data) dan browser tanpa WebGL.

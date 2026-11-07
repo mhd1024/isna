@@ -1,0 +1,34 @@
+---
+import { journey } from '../data/site';
+---
+<section id="journey" class="relative bg-bg-3 [--g:clamp(16px,4vw,40px)]">
+  <div class="mx-auto grid max-w-wrap items-center gap-[clamp(24px,3.2vw,40px)] px-[var(--g)] py-[clamp(44px,4.5vw,64px)] min-[900px]:grid-cols-[minmax(200px,250px)_1px_1fr]">
+    <div data-reveal>
+      <h2 class="script-title">My Journey <svg class="brush" data-draw viewBox="0 0 160 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9c40-6 90-7 154-4" /></svg></h2>
+      <p class="max-w-[24ch] text-[15px] leading-[1.55] text-ink-2">Beberapa langkah penting dalam perjalanan kecilku menuju versi terbaik diri.</p>
+      <button type="button" class="btn btn-line mt-5.5" data-toggle="[data-step-more]" aria-controls="journey" aria-expanded="false">
+        <span data-closed="See My Journey" data-open="Hide Details">See My Journey</span><svg><use href="#i-arrow" /></svg>
+      </button>
+    </div>
+
+    <span class="hidden h-[76%] w-px bg-line-2/60 min-[900px]:block" aria-hidden="true"></span>
+
+    <div data-embla class="embla-viewport">
+      <ol data-timeline class="relative flex gap-4 pt-0 min-[900px]:grid min-[900px]:grid-cols-4 min-[900px]:pt-[26px]">
+        <span data-line class="absolute top-[26px] right-[6%] left-[6%] hidden h-0.5 origin-left bg-[repeating-linear-gradient(90deg,var(--line-2)_0_6px,transparent_6px_12px)] min-[900px]:block" aria-hidden="true"></span>
+        {journey.map((s, i) => (
+          <li data-step class="group relative min-w-0 shrink-0 grow-0 basis-[78%] rounded-[18px] border border-line bg-card px-3.5 pt-11 pb-5.5 text-center shadow-soft transition-[box-shadow,translate] duration-500 ease-spring hover:-translate-y-1.5 hover:shadow-lift sm:basis-[46%] min-[900px]:basis-auto">
+            {i > 0 && <span class="absolute top-1/2 -left-[17px] hidden h-[1.5px] w-4 bg-line-2 min-[900px]:block" aria-hidden="true"></span>}
+            <span class="absolute top-0 left-1/2 grid size-[52px] -translate-1/2 place-items-center rounded-full bg-butter-soft shadow-[0_0_0_5px_var(--bg-3)] transition-transform duration-700 ease-spring group-hover:-rotate-8 group-hover:scale-110">
+              <svg class="size-[34px]" viewBox="0 0 48 48" aria-hidden="true"><use href={`#i-${s.icon}`} /></svg>
+            </span>
+            <h3 class="mb-3 grid min-h-[2.6em] place-items-center text-[15px] leading-[1.3] font-bold">{s.title}</h3>
+            <p class="mx-auto max-w-[18ch] text-[12.5px] leading-[1.45] text-ink-2">{s.text}</p>
+            <p data-step-more data-collapse class="mx-auto h-0 max-w-[20ch] overflow-hidden text-[12.5px] leading-[1.45] text-ink-3 italic opacity-0"><span class="block pt-2.5">{s.more}</span></p>
+          </li>
+        ))}
+      </ol>
+    </div>
+    <div data-embla-dots class="-mt-2 flex justify-center gap-2 min-[900px]:hidden" aria-label="Pilih langkah"></div>
+  </div>
+</section>

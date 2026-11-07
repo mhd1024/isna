@@ -1,0 +1,20 @@
+---
+import { Image } from 'astro:assets';
+import banner from '../assets/banner.webp';
+import { site } from '../data/site';
+---
+<section id="thoughts" class="relative bg-bg-2">
+  <div class="mx-auto max-w-[calc(var(--container-wrap)+40px)] px-[clamp(16px,4vw,40px)] pt-1.5 pb-[clamp(26px,3vw,36px)]">
+    <div data-reveal data-liquid="banner"
+      class="liquid relative grid min-h-[clamp(130px,12.5vw,150px)] items-center justify-items-center gap-3.5 overflow-hidden rounded-[20px] bg-[#eee6dc] px-4.5 pt-6.5 pb-7 shadow-soft sm:grid-cols-[1fr_auto_1fr] sm:justify-items-stretch sm:px-[clamp(18px,3vw,36px)] sm:py-4.5 dark:brightness-[.92]">
+      <Image src={banner} widths={[976, 1952]} sizes="(min-width: 1220px) 1180px, 100vw" loading="lazy" alt="" class="absolute inset-0 size-full object-cover object-bottom" />
+      <figure class="pointer-events-none relative z-10 text-center sm:col-start-2">
+        <blockquote data-split class="font-script text-[clamp(22px,2.5vw,30px)] leading-[1.22] font-medium text-espresso italic">“Semoga langkah kecil ini,<br /> menjadi awal dari hal-hal besar.” <svg class="icon"><use href="#i-heart" /></svg></blockquote>
+        <svg data-draw class="doodle mx-auto mt-2 block h-2.5 w-[170px]" viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 7c50-6 120-6 196-3" /></svg>
+      </figure>
+      <a id="contact" href={`mailto:${site.email}?subject=Halo%20Isna`} class="btn btn-fill relative z-10 sm:col-start-3 sm:justify-self-end">
+        <span>Get in Touch</span><svg><use href="#i-mail" /></svg>
+      </a>
+    </div>
+  </div>
+</section>

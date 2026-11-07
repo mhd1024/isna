@@ -1,0 +1,29 @@
+---
+import { nav } from '../data/site';
+---
+<header data-nav class="fixed inset-x-0 top-0 z-50 grid h-[70px] grid-cols-[1fr_auto] items-center px-4 transition-[background-color,box-shadow,height] duration-400 sm:px-[clamp(16px,3.6vw,40px)] min-[900px]:grid-cols-[1fr_auto_1fr] [&.is-stuck]:h-[60px] [&.is-stuck]:bg-bg/85 [&.is-stuck]:shadow-[0_1px_0_var(--line)] [&.is-stuck]:backdrop-blur-md dark:bg-bg/75 dark:backdrop-blur-md">
+  <a href="#home" class="group inline-flex items-center gap-2.5 justify-self-start font-script text-[23px] font-semibold leading-none sm:text-[26px]" aria-label="Isna Ramdaniah, ke atas">
+    <svg class="h-6 w-[34px] text-gold transition-transform duration-700 ease-spring group-hover:-rotate-12 group-hover:scale-110" viewBox="0 0 40 28" aria-hidden="true"><use href="#i-bow" /></svg>
+    <span>Isna Ramdaniah</span>
+  </a>
+
+  <nav id="menu" aria-label="Utama"
+    class="invisible fixed inset-x-0 top-0 -z-10 flex flex-col gap-0.5 bg-bg px-5 pt-[84px] pb-6 text-[17px] font-medium shadow-lift [clip-path:circle(0_at_calc(100%-44px)_34px)] transition-[clip-path] duration-700 ease-out-soft [&.is-open]:visible [&.is-open]:[clip-path:circle(150%_at_calc(100%-44px)_34px)]
+           min-[900px]:visible min-[900px]:relative min-[900px]:z-0 min-[900px]:flex-row min-[900px]:gap-1 min-[900px]:bg-transparent min-[900px]:p-0 min-[900px]:text-[13.5px] min-[900px]:shadow-none min-[900px]:[clip-path:none]">
+    <span class="nav-pill hidden min-[900px]:block" aria-hidden="true"></span>
+    {nav.map((l, i) => (
+      <a href={l.href} class:list={['relative z-10 rounded-full px-4 py-3 text-ink-2 transition-colors hover:text-ink min-[900px]:px-3.5 min-[900px]:py-1.5 [&.is-active]:font-semibold [&.is-active]:text-ink max-[899px]:[&.is-active]:bg-butter dark:[&.is-active]:text-espresso', { 'is-active': i === 0 }]}>{l.label}</a>
+    ))}
+  </nav>
+
+  <div class="flex gap-1 justify-self-end">
+    <button type="button" data-theme-toggle aria-label="Ganti tema gelap/terang" class="group grid size-[42px] place-items-center rounded-full transition hover:bg-butter-soft active:scale-90">
+      <svg class="col-start-1 row-start-1 size-6 transition duration-500 ease-spring dark:rotate-90 dark:scale-50 dark:opacity-0"><use href="#i-moon" /></svg>
+      <svg class="col-start-1 row-start-1 size-6 -rotate-90 scale-50 opacity-0 transition duration-500 ease-spring dark:rotate-0 dark:scale-100 dark:opacity-100"><use href="#i-sun" /></svg>
+    </button>
+    <button type="button" data-burger aria-controls="menu" aria-expanded="false" aria-label="Buka menu" class="group grid size-[42px] place-items-center rounded-full hover:bg-butter-soft min-[900px]:hidden">
+      <span class="col-start-1 row-start-1 h-[1.8px] w-5 -translate-y-1 rounded bg-current transition duration-500 ease-spring group-aria-expanded:translate-y-0 group-aria-expanded:rotate-45"></span>
+      <span class="col-start-1 row-start-1 h-[1.8px] w-5 translate-y-1 rounded bg-current transition duration-500 ease-spring group-aria-expanded:translate-y-0 group-aria-expanded:-rotate-45"></span>
+    </button>
+  </div>
+</header>

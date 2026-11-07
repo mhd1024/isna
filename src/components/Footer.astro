@@ -1,0 +1,21 @@
+---
+import { site } from '../data/site';
+const links = [
+  { href: site.instagram, label: 'Instagram', icon: 'i-insta', ext: true },
+  { href: site.youtube, label: 'YouTube', icon: 'i-yt', ext: true },
+  { href: `mailto:${site.email}`, label: 'Email', icon: 'i-mail', ext: false },
+];
+---
+<footer class="mx-auto flex max-w-[calc(var(--container-wrap)+40px)] flex-col-reverse items-center justify-between gap-4 border-t border-line px-[clamp(16px,4vw,40px)] pt-5.5 pb-6.5 text-[13px] text-ink-2 sm:flex-row">
+  <p>© {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+  <ul class="flex gap-3">
+    {links.map((l) => (
+      <li>
+        <a href={l.href} aria-label={l.label} {...(l.ext ? { target: '_blank', rel: 'noopener' } : {})}
+          class="grid size-10 place-items-center rounded-full text-ink transition duration-500 ease-spring hover:-translate-y-[3px] hover:bg-butter-soft">
+          <svg class="size-[22px]" aria-hidden="true"><use href={`#${l.icon}`} /></svg>
+        </a>
+      </li>
+    ))}
+  </ul>
+</footer>
