@@ -66,8 +66,8 @@
   }
   :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 8px; }
   ::selection { background: var(--butter); color: #3a2c25; }
-  /* JS aktif: sembunyikan elemen intro sampai GSAP mengambil alih (tanpa kedip) */
-  .js [data-intro] { visibility: hidden; }
+  /* Sembunyikan elemen yang akan dianimasikan sampai GSAP mengambil alih (tanpa kedip) */
+  .motion :is([data-intro], [data-reveal], [data-step], [data-chip], [data-line]) { visibility: hidden; }
 }
 
 /* ---------- komponen yang tidak praktis ditulis sebagai utility ---------- */
@@ -124,9 +124,9 @@
 
   /* Kanvas WebGL menggantikan <img> setelah siap */
   .liquid > canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .9s var(--ease-out-soft); }
-  .liquid > img { transition: opacity .9s var(--ease-out-soft); }
   .liquid.is-gl > canvas { opacity: 1; }
-  .liquid.is-gl > img { opacity: 0; }
+  /* <img> tetap di bawah kanvas selama transisi, baru disembunyikan setelahnya: tidak ada kedip */
+  .liquid.gl-done > img { visibility: hidden; }
 
   .hero-fade { -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 34%); mask-image: linear-gradient(90deg, transparent 0, #000 34%); }
   @media (max-width: 899px) {

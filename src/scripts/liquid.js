@@ -11,9 +11,9 @@ import {
 
 const PRESETS = {
   // mask 1 = tepi kiri bergelombang memudar ke latar (hero)
-  hero:   { mask: 1, focus: [0.6, 0.42], breeze: 0.7, warp: 0.05, sway: 0.0 },
+  hero:   { mask: 1, focus: [0.6, 0.42], breeze: 0.8, warp: 0.09, sway: 0.0 },
   // sway = bunga di bagian bawah bergoyang lebih kuat
-  banner: { mask: 0, focus: [0.5, 1.0],  breeze: 0.5, warp: 0.06, sway: 1.0 },
+  banner: { mask: 0, focus: [0.5, 1.0],  breeze: 0.6, warp: 0.11, sway: 1.0 },
 };
 
 const VERT = /* glsl */`
@@ -28,6 +28,7 @@ const SIM_FRAG = /* glsl */`
   uniform vec2 uVel;
   uniform float uAspect;
   uniform float uRadius;
+  uniform float uBurst;
   varying vec2 vUv;
   void main() {
     vec2 v0 = texture2D(uPrev, vUv).xy * 2.0 - 1.0;
@@ -39,6 +40,10 @@ const SIM_FRAG = /* glsl */`
     float g = exp(-dot(d, d) / uRadius);
     v += uVel * g;
     ink += g * min(length(uVel) * 3.0, 0.6);
+    // klik / tap: dorongan melingkar keluar, seperti tetesan jatuh ke air
+    float gb = exp(-dot(d, d) / (uRadius * 3.0));
+    v += normalize(d + 1e-5) * gb * uBurst;
+    ink += gb * uBurst * 0.8;
     v *= 0.962;
     ink *= 0.95;
     gl_FragColor = vec4(clamp(v, -1.0, 1.0) * 0.5 + 0.5, clamp(ink, 0.0, 1.0), 1.0);
@@ -54,6 +59,7 @@ const VIEW_FRAG = /* glsl */`
   uniform vec2 uFocus;
   uniform float uTime;
   uniform float uMask;
+  uniform float uMaskDir; // 0 = memudar dari kiri (desktop), 1 = dari atas (HP)
   uniform float uBreeze;
   uniform float uSway;
   uniform float uWarp;
@@ -90,7 +96,7 @@ const VIEW_FRAG = /* glsl */`
 
     vec2 uv = vUv + breeze + introWarp + v * uWarp;
     vec2 c = cover(uv);
-    float split = length(v) * 0.007;
+    float split = length(v) * 0.0015; // pecahan warna sangat tipis, cukup untuk kesan "lensa air"
     vec3 col;
     col.r = texture2D(uTex, c + v * split).r;
     col.g = texture2D(uTex, c).g;
@@ -100,11 +106,13 @@ const VIEW_FRAG = /* glsl */`
 
     float a = 1.0;
     if (uMask > 0.5) {
-      float w = noise(vec2(vUv.y * 2.6, uTime * 0.18)) * 0.6 + noise(vec2(vUv.y * 7.0 - uTime * 0.25, 3.1)) * 0.25;
+      // tepi bergelombang: sumbu & arah tergantung tata letak
+      float along = mix(vUv.y, vUv.x, uMaskDir);
+      float across = mix(vUv.x + v.x * 0.04, 1.0 - vUv.y - v.y * 0.04, uMaskDir);
+      float w = noise(vec2(along * 2.6, uTime * 0.18)) * 0.6 + noise(vec2(along * 7.0 - uTime * 0.25, 3.1)) * 0.25;
       float edge = 0.02 + w * 0.12 + (1.0 - uIntro) * 0.35;
-      a = smoothstep(edge, edge + 0.3, vUv.x + v.x * 0.04);
+      a = smoothstep(edge, edge + mix(0.3, 0.26, uMaskDir), across);
     }
-    a *= uIntro;
     gl_FragColor = vec4(col * a, a);   // premultiplied alpha
   }
 `;
@@ -163,7 +171,7 @@ function create(el, img, bmp, preset) {
     vertexShader: VERT, fragmentShader: SIM_FRAG, depthTest: false, depthWrite: false,
     uniforms: {
       uPrev: { value: null }, uMouse: { value: new Vector2(-9, -9) }, uVel: { value: new Vector2() },
-      uAspect: { value: 1 }, uRadius: { value: 0.006 },
+      uAspect: { value: 1 }, uRadius: { value: 0.009 }, uBurst: { value: 0 },
     },
   });
   const simScene = new Scene(); simScene.add(new Mesh(quad, simMat));
@@ -178,7 +186,7 @@ function create(el, img, bmp, preset) {
       uTex: { value: tex }, uSim: { value: null },
       uRes: { value: new Vector2(1, 1) }, uImg: { value: new Vector2(bmp.naturalWidth || bmp.width, bmp.naturalHeight || bmp.height) },
       uFocus: { value: new Vector2(...preset.focus) },
-      uTime: { value: 0 }, uMask: { value: preset.mask }, uBreeze: { value: preset.breeze },
+      uTime: { value: 0 }, uMask: { value: preset.mask }, uMaskDir: { value: 0 }, uBreeze: { value: preset.breeze },
       uSway: { value: preset.sway }, uWarp: { value: preset.warp }, uIntro: { value: 0 },
     },
   });
@@ -200,6 +208,8 @@ function create(el, img, bmp, preset) {
     w = r.width; h = r.height;
     renderer.setSize(w, h, false);
     viewMat.uniforms.uRes.value.set(w, h);
+    // foto selebar layar (HP) -> pudar dari atas; di samping teks (desktop) -> pudar dari kiri
+    viewMat.uniforms.uMaskDir.value = w > innerWidth * 0.9 ? 1 : 0;
     const sw = Math.max(32, Math.min(256, Math.round(w / 7)));
     const sh = Math.max(16, Math.round(sw * h / w));
     rtA.setSize(sw, sh); rtB.setSize(sw, sh);
@@ -211,7 +221,7 @@ function create(el, img, bmp, preset) {
 
   /* input: kursor & sentuhan, dipetakan ke UV elemen */
   const hit = el.closest('section') || el;
-  const ptr = { x: -9, y: -9, px: null, py: null, vx: 0, vy: 0, lastInput: -1e9 };
+  const ptr = { x: -9, y: -9, px: null, py: null, vx: 0, vy: 0, burst: 0, lastInput: -1e9 };
   hit.addEventListener('pointermove', e => {
     const r = el.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width;
@@ -226,6 +236,14 @@ function create(el, img, bmp, preset) {
     ptr.lastInput = performance.now();
   }, { passive: true });
   hit.addEventListener('pointerleave', () => { ptr.px = null; }, { passive: true });
+  hit.addEventListener('pointerdown', e => {
+    if ((e.target).closest?.('a,button')) return;
+    const r = el.getBoundingClientRect();
+    ptr.x = (e.clientX - r.left) / r.width;
+    ptr.y = 1 - (e.clientY - r.top) / r.height;
+    ptr.burst = 0.9;
+    ptr.lastInput = performance.now();
+  }, { passive: true });
 
   /* frame */
   let t0 = null, odd = false, lost = false;
@@ -242,6 +260,8 @@ function create(el, img, bmp, preset) {
       const k = len > 1 ? 1 / len : 1;
       vel.set(ptr.vx * k, ptr.vy * k);
       ptr.vx = 0; ptr.vy = 0;
+      simMat.uniforms.uBurst.value = ptr.burst;
+      ptr.burst *= 0.55; if (ptr.burst < 0.01) ptr.burst = 0;
       simMat.uniforms.uMouse.value.set(ptr.x, ptr.y);
 
       simMat.uniforms.uPrev.value = rtA.texture;
@@ -253,7 +273,9 @@ function create(el, img, bmp, preset) {
       const u = viewMat.uniforms;
       u.uSim.value = rtA.texture;
       u.uTime.value = time - t0;
-      u.uIntro.value = Math.min(1, u.uIntro.value + dt / 1.6);
+      const before = u.uIntro.value;
+      u.uIntro.value = Math.min(1, before + dt / 1.6);
+      if (before < 1 && u.uIntro.value >= 1) el.classList.add('gl-done');
       renderer.render(viewScene, cam);
     },
   };

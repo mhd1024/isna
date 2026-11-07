@@ -14,6 +14,7 @@ import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import VanillaTilt from 'vanilla-tilt';
 
 gsap.registerPlugin(ScrollTrigger, SplitText, DrawSVGPlugin, Flip);
+(window as unknown as { __app: boolean }).__app = true;
 
 const root = document.documentElement;
 const $ = <T extends Element = HTMLElement>(s: string, el: ParentNode = document) => el.querySelector<T>(s);
@@ -62,7 +63,13 @@ const burger = $('[data-burger]')!;
 const pill = $('.nav-pill', menu);
 const links = $$<HTMLAnchorElement>('a', menu);
 
-ScrollTrigger.create({ start: 24, end: 'max', onToggle: s => nav.classList.toggle('is-stuck', s.isActive) });
+let stuck = false;
+const updateStuck = () => {
+  const s = scrollY > 24;
+  if (s !== stuck) { stuck = s; nav.classList.toggle('is-stuck', s); }
+};
+addEventListener('scroll', updateStuck, { passive: true });
+updateStuck();
 
 function setMenu(open: boolean) {
   menu.classList.toggle('is-open', open);
@@ -110,16 +117,35 @@ $$('.btn').forEach(b => b.addEventListener('pointerenter', e => {
 const mm = gsap.matchMedia();
 mm.add({ motion: '(prefers-reduced-motion: no-preference)', wide: '(min-width: 900px)' }, ctx => {
   const { motion, wide } = ctx.conditions as { motion: boolean; wide: boolean };
-  gsap.set('[data-intro]', { visibility: 'visible' });
-  if (!motion) return;
+  if (!motion) { root.classList.remove('motion'); return; }
 
-  // Hero: huruf "mengalir" naik dari balik garis
-  const split = SplitText.create('[data-hero-title] > span', { type: 'lines,chars', mask: 'lines' });
-  const intro = gsap.timeline({ defaults: { ease: 'expo.out' } });
-  intro
-    .from(split.chars, { yPercent: 110, rotate: 6, duration: 1.3, stagger: 0.022 })
-    .from('[data-intro]:not([data-hero-title])', { y: 16, autoAlpha: 0, duration: 1, stagger: 0.12 }, 0.35)
-    .fromTo('#home [data-draw] path', { drawSVG: '0%' }, { drawSVG: '100%', duration: 2.2, ease: 'power2.inOut', stagger: 0.25 }, 0.5);
+  // Hero: huruf "mengalir" naik dari balik garis.
+  // Dipecah SETELAH font siap, supaya baris tidak dihitung dengan font cadangan.
+  let split: SplitText | null = null;
+  gsap.set('#home [data-draw] path', { drawSVG: '0%' });
+  const fontsReady = Promise.race([document.fonts?.ready ?? Promise.resolve(), new Promise(r => setTimeout(r, 1500))]);
+  fontsReady.then(() => {
+    split = SplitText.create('[data-hero-title] > span', { type: 'lines,chars', mask: 'lines' });
+    gsap.set('[data-intro]', { autoAlpha: 1 });
+    gsap.timeline({ defaults: { ease: 'expo.out' } })
+      .from(split.chars, { yPercent: 110, rotate: 6, duration: 1.3, stagger: 0.022 })
+      .from('[data-intro]:not([data-hero-title])', { y: 16, autoAlpha: 0, duration: 1, stagger: 0.12 }, 0.35)
+      .to('#home [data-draw] path', { drawSVG: '100%', duration: 2.2, ease: 'power2.inOut', stagger: 0.25 }, 0.5);
+  });
+
+  // Hero mengikuti kursor: lapisan bergerak dengan kedalaman berbeda
+  if (wide && finePointer) {
+    const layers = [
+      { el: '[data-hero-title]', k: -10 }, { el: '[data-blob]', k: 26 },
+      { el: '#home > svg[data-draw]', k: 16 },
+    ].map(l => ({ k: l.k, x: gsap.quickTo(l.el, 'x', { duration: 1.2, ease: 'power3.out' }), y: gsap.quickTo(l.el, 'y', { duration: 1.2, ease: 'power3.out' }) }));
+    const hero = $('#home')!;
+    hero.addEventListener('pointermove', e => {
+      const nx = e.clientX / innerWidth - 0.5, ny = e.clientY / innerHeight - 0.5;
+      layers.forEach(l => { l.x(nx * l.k); l.y(ny * l.k); });
+    });
+    hero.addEventListener('pointerleave', () => layers.forEach(l => { l.x(0); l.y(0); }));
+  }
 
   // Blob krem berubah bentuk perlahan, seperti tetesan
   gsap.to('[data-blob]', {
@@ -149,10 +175,10 @@ mm.add({ motion: '(prefers-reduced-motion: no-preference)', wide: '(min-width: 9
   });
 
   // Timeline: garis mengalir lalu kartu menyusul
-  gsap.from('[data-line]', { scaleX: 0, duration: 1.6, ease: 'power3.inOut', scrollTrigger: { trigger: '[data-timeline]', start: 'top 85%', once: true } });
-  gsap.from('[data-step]', { y: 36, autoAlpha: 0, duration: 1, ease: 'back.out(1.4)', stagger: 0.12, clearProps: 'transform', scrollTrigger: { trigger: '[data-timeline]', start: 'top 85%', once: true } });
+  gsap.fromTo('[data-line]', { scaleX: 0, autoAlpha: 1 }, { scaleX: 1, duration: 1.6, ease: 'power3.inOut', scrollTrigger: { trigger: '[data-timeline]', start: 'top 85%', once: true } });
+  gsap.fromTo('[data-step]', { y: 36, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'back.out(1.4)', stagger: 0.12, clearProps: 'transform', scrollTrigger: { trigger: '[data-timeline]', start: 'top 85%', once: true } });
 
-  gsap.from('[data-chip]:not([hidden])', { x: -18, autoAlpha: 0, duration: 0.8, ease: 'expo.out', stagger: 0.05, clearProps: 'transform', scrollTrigger: { trigger: '[data-chips]', start: 'top 88%', once: true } });
+  gsap.fromTo('[data-chip]:not([hidden])', { x: -18, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.8, ease: 'expo.out', stagger: 0.05, clearProps: 'transform', scrollTrigger: { trigger: '[data-chips]', start: 'top 88%', once: true } });
 
   // Kutipan banner: kata demi kata
   const words = SplitText.create('[data-split]', { type: 'words' });
@@ -162,7 +188,7 @@ mm.add({ motion: '(prefers-reduced-motion: no-preference)', wide: '(min-width: 9
   gsap.to('[data-sway]', { rotate: 18, scale: 1.04, duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1 });
   gsap.to('[data-breeze]', { rotate: -5, duration: 2.5, ease: 'sine.inOut', yoyo: true, repeat: -1 });
 
-  return () => { split.revert(); words.revert(); };
+  return () => { split?.revert(); words.revert(); };
 });
 
 /* ---------- buka/tutup konten ---------- */
@@ -195,7 +221,7 @@ skillBtn?.addEventListener('click', () => {
   setLabel(skillBtn, open);
   Flip.from(state, {
     duration: reduce ? 0 : 0.7, ease: 'expo.out', absolute: true,
-    onEnter: els => gsap.fromTo(els, { autoAlpha: 0, scale: 0.85 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(1.6)' }),
+    onEnter: els => gsap.fromTo(els, { autoAlpha: 0, scale: 0.85 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(1.6)', clearProps: 'transform' }),
     onLeave: els => gsap.to(els, { autoAlpha: 0, scale: 0.85, duration: 0.3 }),
     onComplete: () => ScrollTrigger.refresh(),
   });
@@ -277,7 +303,20 @@ lightbox.init();
 
 /* ---------- kartu miring mengikuti kursor (Vanilla Tilt) ---------- */
 if (finePointer && !reduce) {
-  VanillaTilt.init($$('[data-tilt]'), { max: 6, speed: 900, scale: 1.02, glare: false, perspective: 900, easing: 'cubic-bezier(.22,1,.36,1)' });
+  VanillaTilt.init($$('[data-tilt]'), { max: 7, speed: 900, scale: 1.03, glare: true, 'max-glare': 0.18, perspective: 900, easing: 'cubic-bezier(.22,1,.36,1)' });
+  VanillaTilt.init($$('[data-step]'), { max: 9, speed: 700, scale: 1.04, glare: true, 'max-glare': 0.25, perspective: 700, easing: 'cubic-bezier(.22,1,.36,1)' });
+
+  // Tombol magnetis: sedikit tertarik ke arah kursor, kembali dengan pegas
+  $$('.btn').forEach(b => {
+    const x = gsap.quickTo(b, 'x', { duration: 0.6, ease: 'power3.out' });
+    const y = gsap.quickTo(b, 'y', { duration: 0.6, ease: 'power3.out' });
+    b.addEventListener('pointermove', e => {
+      const r = b.getBoundingClientRect();
+      x((e.clientX - r.left - r.width / 2) * 0.3);
+      y((e.clientY - r.top - r.height / 2) * 0.4);
+    });
+    b.addEventListener('pointerleave', () => gsap.to(b, { x: 0, y: 0, duration: 0.9, ease: 'elastic.out(1, .4)' }));
+  });
 }
 
 /* ---------- foto cair (Three.js), dimuat paling akhir ---------- */
@@ -295,4 +334,3 @@ const idle = window.requestIdleCallback || ((fn: () => void) => setTimeout(fn, 2
 if (document.readyState === 'complete') idle(bootLiquid);
 else addEventListener('load', () => idle(bootLiquid), { once: true });
 
-root.classList.remove('js');

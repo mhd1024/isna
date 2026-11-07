@@ -17,7 +17,7 @@ import { journey } from '../data/site';
       <ol data-timeline class="relative flex gap-4 pt-0 min-[900px]:grid min-[900px]:grid-cols-4 min-[900px]:pt-[26px]">
         <span data-line class="absolute top-[26px] right-[6%] left-[6%] hidden h-0.5 origin-left bg-[repeating-linear-gradient(90deg,var(--line-2)_0_6px,transparent_6px_12px)] min-[900px]:block" aria-hidden="true"></span>
         {journey.map((s, i) => (
-          <li data-step class="group relative min-w-0 shrink-0 grow-0 basis-[78%] rounded-[18px] border border-line bg-card px-3.5 pt-11 pb-5.5 text-center shadow-soft transition-[box-shadow,translate] duration-500 ease-spring hover:-translate-y-1.5 hover:shadow-lift sm:basis-[46%] min-[900px]:basis-auto">
+          <li data-step class="group relative min-w-0 shrink-0 grow-0 basis-[78%] rounded-[18px] border border-line bg-card px-3.5 pt-11 pb-5.5 text-center shadow-soft transition-shadow duration-500 hover:shadow-lift sm:basis-[46%] min-[900px]:basis-auto">
             {i > 0 && <span class="absolute top-1/2 -left-[17px] hidden h-[1.5px] w-4 bg-line-2 min-[900px]:block" aria-hidden="true"></span>}
             <span class="absolute top-0 left-1/2 grid size-[52px] -translate-1/2 place-items-center rounded-full bg-butter-soft shadow-[0_0_0_5px_var(--bg-3)] transition-transform duration-700 ease-spring group-hover:-rotate-8 group-hover:scale-110">
               <svg class="size-[34px]" viewBox="0 0 48 48" aria-hidden="true"><use href={`#i-${s.icon}`} /></svg>
