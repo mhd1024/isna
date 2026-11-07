@@ -30,3 +30,10 @@ npm run preview
 - Domain untuk og:image ada di `astro.config.mjs` (`site`).
 
 Animasi otomatis mati kalau pengguna memilih *reduced motion*. Efek Three.js dilewati juga untuk mode hemat data (Save-Data) dan browser tanpa WebGL.
+
+## Deploy (GitHub Pages)
+
+Setiap push ke `main` atau `claude/gifted-dirac-tbibxi` otomatis di-build lalu dipublikasikan oleh `.github/workflows/deploy.yml` ke
+**https://mhd1024.github.io/isna/**
+
+Sekali saja di awal: buka **Settings → Pages**, lalu set **Source** ke **GitHub Actions**.
